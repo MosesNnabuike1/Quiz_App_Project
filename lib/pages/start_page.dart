@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'category_page.dart'; // Import CategoryPage to navigate to it
 
-class StartPage extends StatelessWidget {
+class StartPage extends StatefulWidget {
   const StartPage({super.key});
+
+  @override
+  _StartPageState createState() => _StartPageState();
+}
+
+class _StartPageState extends State<StartPage> {
+  final TextEditingController _nameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +29,12 @@ class StartPage extends StatelessWidget {
                   decoration: BoxDecoration(
                     boxShadow: [
                       BoxShadow(
-                        color: const Color.fromRGBO(64, 155, 46, 1).withOpacity(0.5), // Shadow color
+                        color: const Color.fromRGBO(64, 155, 46, 1)
+                            .withOpacity(0.5), // Shadow color
                         spreadRadius: 5, // How far the shadow spreads
                         blurRadius: 7, // Blurring radius
-                        offset: const Offset(0, 3), // Offset of the shadow (x, y)
+                        offset:
+                            const Offset(0, 3), // Offset of the shadow (x, y)
                       ),
                     ],
                     shape: BoxShape.circle,
@@ -58,6 +67,7 @@ class StartPage extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: TextField(
+                    controller: _nameController,
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       labelText: 'Enter your name',
@@ -82,35 +92,47 @@ class StartPage extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Navigate to the Category Page with "opening-up" animation
-                      Navigator.push(
-                        context,
-                        PageRouteBuilder(
-                          transitionDuration: const Duration(milliseconds: 1000), // Animation duration
-                          pageBuilder: (context, animation, secondaryAnimation) =>
-                              const CategoryPage(), // Navigate to CategoryPage
-                          transitionsBuilder:
-                              (context, animation, secondaryAnimation, child) {
-                            // Create opening-up animation
+                      if (_nameController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please enter your name'),
+                          ),
+                        );
+                      } else {
+                        // Navigate to the Category Page with "opening-up" animation
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            transitionDuration: const Duration(
+                                milliseconds: 1000), // Animation duration
+                            pageBuilder: (context, animation,
+                                    secondaryAnimation) =>
+                                const CategoryPage(), // Navigate to CategoryPage
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              // Create opening-up animation
 
-                            // Scale Animation (enlarges from a small scale to full)
-                            var scaleTween = Tween<double>(begin: 0.8, end: 1.0)
-                                .chain(CurveTween(curve: Curves.easeInOut));
+                              // Scale Animation (enlarges from a small scale to full)
+                              var scaleTween = Tween<double>(
+                                      begin: 0.8, end: 1.0)
+                                  .chain(CurveTween(curve: Curves.easeInOut));
 
-                            // Fade animation for smooth transition
-                            var fadeTween = Tween<double>(begin: 0.0, end: 1.0)
-                                .chain(CurveTween(curve: Curves.easeInOut));
+                              // Fade animation for smooth transition
+                              var fadeTween = Tween<double>(
+                                      begin: 0.0, end: 1.0)
+                                  .chain(CurveTween(curve: Curves.easeInOut));
 
-                            return FadeTransition(
-                              opacity: animation.drive(fadeTween),
-                              child: ScaleTransition(
-                                scale: animation.drive(scaleTween),
-                                child: child,
-                              ),
-                            );
-                          },
-                        ),
-                      );
+                              return FadeTransition(
+                                opacity: animation.drive(fadeTween),
+                                child: ScaleTransition(
+                                  scale: animation.drive(scaleTween),
+                                  child: child,
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
